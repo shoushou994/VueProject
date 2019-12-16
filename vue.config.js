@@ -9,7 +9,9 @@ const postcss = px2rem({
 
 module.exports = {
   // runtimeCompiler: true,
-  lintOnSave: false, // 关闭EsLint的规则
+  // 关闭EsLint的规则
+  lintOnSave: false,
+
   css: { // 添加postcss配置
     loaderOptions: {
       postcss: {
@@ -40,6 +42,7 @@ module.exports = {
         pathRewrite: {
           '^/api' : ''  // 转发请求时去除路径前面的/api
         },
+        changeOrigin: true,  //支持跨域
       },
 
       '/gh': {
@@ -49,6 +52,15 @@ module.exports = {
         },
         changeOrigin: true, // 支持跨域, 如果协议/主机也不相同, 必须加上
       }
+    }
+  },
+
+  pluginOptions: {
+    i18n: {
+      locale: 'zh_CN',
+      fallbackLocale: 'en',
+      localeDir: 'locale',
+      enableInSFC: false
     }
   }
 }

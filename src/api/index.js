@@ -9,5 +9,6 @@ export const reqAddress = (latitude, longitude) => ajax(`/position/${latitude},$
 export const reqCategorys = () => ajax('/index_category')
 
 //3. 根据经纬度获取商家列表
-export const reqShops = ({latitude, longitude}) => ajax('/shops', {params:{latitude, longitude}})
+// export const reqShops = ({latitude, longitude}) => ajax('/shops', {params:{latitude, longitude}})
+export const reqShops = ({latitude, longitude}) => ajax('/shops', {params:{longitude, latitude}})
 

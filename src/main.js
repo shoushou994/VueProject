@@ -5,6 +5,8 @@ import App from './App.vue'
 import router from './router'
 import Header from './components/header/Header.vue'
 import store from './vuex/store'
+import './utils/validate'
+import i18n from './i18n'
 
 
 Vue.config.productionTip = false
@@ -16,7 +18,8 @@ Vue.component(TabItem.name, TabItem);
 new Vue({
   render: h => h(App),
   router,
-  store,
+  i18n,
+  store
 }).$mount('#app')
 
 

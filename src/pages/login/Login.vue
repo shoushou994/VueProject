@@ -10,7 +10,7 @@
         </div>
         <div class="login_content">
           <form>
-            <div class="on">
+            <div :class="{on:isSmsLogin}">
               <section class="login_message">
                 <input type="tel" maxlength="11" placeholder="手机号">
                 <button disabled="disabled" class="get_verification">获取验证码</button>
@@ -23,7 +23,7 @@
                 <a href="javascript:;">《用户服务协议》</a>
               </section>
             </div>
-            <div>
+            <div :class="{on: !isSmsLogin}">
               <section>
                 <section class="login_message">
                   <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
@@ -53,7 +53,15 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import Vue from 'vue';
   export default {
+    data(){
+      return {
+        isSmsLogin: true,
+      }
+    }
+    
+
   }
 </script>
 
