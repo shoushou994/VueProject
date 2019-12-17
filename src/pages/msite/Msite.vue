@@ -91,16 +91,12 @@
   import Swiper from 'swiper'
   import 'swiper/css/swiper.css'
   import {mapState} from 'vuex'
-  import Star from '../../components/star/Star'
 
   // import _ from 'lodash'  //全部引入
-  import chunk from 'lodash/chunk'  //按需打包引入
+  // import chunk from 'lodash/chunk'  //按需打包引入
   // import {chunk} from 'lodash'  //另一个库 lodash-es 按需打包引入
 
   export default {
-    components:{
-      Star,
-    },
     computed:{
       ...mapState(['address', 'categorys', 'shops']),
 

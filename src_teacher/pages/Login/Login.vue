@@ -84,7 +84,7 @@
       sendCode () {
         alert('----')
       },
-  
+ 
       async login(){
         if(this.isShowSms){
           const success = await this.$validator.validateAll(['phone', 'phoneCode']) // 对指定的所有表单项进行验证

@@ -4,19 +4,22 @@
         <div class="login_header">
           <h2 class="login_logo">硅谷外卖</h2>
           <div class="login_header_title">
-            <a href="javascript:;" class="on">短信登录</a>
-            <a href="javascript:;">密码登录</a>
+            <a href="javascript:;" :class="{on:isSmsLogin}" @click="isSmsLogin=true">短信登录</a>
+            <a href="javascript:;" :class="{on:!isSmsLogin}" @click="isSmsLogin=false">密码登录</a>
           </div>
         </div>
         <div class="login_content">
           <form>
             <div :class="{on:isSmsLogin}">
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机号">
-                <button disabled="disabled" class="get_verification">获取验证码</button>
+                <input type="tel" maxlength="11" placeholder="手机号" v-model="phone" name="phone" v-validate="'required|phone'">
+                <button :disabled="!isRightPhone || computeTime>0" class="get_verification" :class="{right_phone_number:isRightPhone}" @click.prevent="sendCode">
+                  {{computeTime>0 ? `短信已发送(${computeTime}s)` : '获取验证码'}}</button>
+                <span style="color: red;" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="验证码">
+                <input type="tel" maxlength="8" placeholder="验证码"  v-model="code" name="code" v-validate="{required:true,regex:/^\d{6}$/}">
+                <span style="color: red;" v-show="errors.has('code')">{{ errors.first('code') }}</span>
               </section>
               <section class="login_hint">
                 温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -26,26 +29,31 @@
             <div :class="{on: !isSmsLogin}">
               <section>
                 <section class="login_message">
-                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name" name="name" v-validate="'required'">
+                  <span style="color: red;" v-show="errors.has('name')">{{ errors.first('name') }}</span>
                 </section>
                 <section class="login_verification">
-                  <input type="tel" maxlength="8" placeholder="密码">
-                  <div class="switch_button off">
-                    <div class="switch_circle"></div>
-                    <span class="switch_text">...</span>
+                  <input :type="isShowPwd ? 'text' : 'password'" maxlength="8" placeholder="密码" v-model="password" name="password" v-validate="'required'">
+                  <div class="switch_button " :class="isShowPwd ? 'on' : 'off'" @click="isShowPwd = !isShowPwd">
+                    <div class="switch_circle" :class="{right:isShowPwd}"></div>
+                    <span class="switch_text">{{isShowPwd ? 'xxx' : ''}}</span>
                   </div>
+                  <span style="color: red;" v-show="errors.has('password')">{{ errors.first('password') }}</span>
                 </section>
                 <section class="login_message">
-                  <input type="text" maxlength="11" placeholder="验证码">
-                  <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                  <input type="text" maxlength="11" placeholder="验证码" v-model="captcha" name="captcha" v-validate="{required:true,regex:/^[0-9a-zA-Z]{4}$/}">
+                  <!-- <img class="get_verification" src="/api/captcha" alt="captcha">  //代理服务器处理404问题-->
+                  <!-- 是跨域的HTTP请求，不是Ajax请求，没有跨域问题 -->
+                  <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="updateCaptcha" ref="captcha">
+                  <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
                 </section>
               </section>
             </div>
-            <button class="login_submit">登录</button>
+            <button class="login_submit" @click.prevent="login">登录</button>
           </form>
           <a href="javascript:;" class="about_us">关于我们</a>
         </div>
-        <a href="javascript:" class="go_back">
+        <a href="javascript:" class="go_back" @click="$router.back()">
           <i class="iconfont icon-jiantou2"></i>
         </a>
       </div>
@@ -53,20 +61,88 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import Vue from 'vue';
+  import {Toast, MessageBox} from 'mint-ui';
   export default {
     data(){
       return {
-        isSmsLogin: true,
+        isSmsLogin: true,  //是否是短信登录
+        phone: '',  //手机号
+        code: '',  //短信验证码
+        name:'',  //用户名
+        password:'',  //密码
+        captcha:'',  //密码登录验证码/图片验证码
+        isShowPwd:false,  //是否显示密码
+        computeTime: 0,  //计时所剩时间
       }
+    },
+    computed:{
+      isRightPhone(){
+        return /^1\d{10}$/.test(this.phone)
+      }
+    },
+    methods: {
+      async sendCode(){
+        this.computeTime = 60
+        const timer = setInterval(()=>{
+          this.computeTime--
+          if (this.computeTime <= 0) {
+            this.computeTime = 0
+            clearInterval(timer)
+          }
+        },1000)
+
+        //发请求
+        const result = await this.$API.reqSendCode(this.phone)
+        console.log(result);
+        if (result.code === 1) {  //成功
+          Toast('短信验证码已发送')
+        } else {  //失败
+          this.computeTime = 0
+          MessageBox('提示', result.msg)
+        }
+      },
+
+      async login(){
+        // 对指定的所有表单项进行验证
+        let success 
+        if(this.isSmsLogin){
+          success = await this.$validator.validateAll(['phone', 'code']) 
+        }else{
+          success = await this.$validator.validateAll(['name', 'password', 'captcha']) // 对指定的所有表单项进行验证
+        }
+        //验证通过，发送登录请求
+        let result 
+        if (success) {
+          const {isSmsLogin, phone, code, name, password, captcha} = this
+          if (isSmsLogin) {
+            result = await this.$API.reqSmsLogin({phone, code})
+          } else {
+            result = await this.$API.reqPwdLogin({name, password, captcha})
+            this.captcha = ''
+            this.updateCaptcha()
+          }
+        }
+        console.log(result);
+        //请求结果
+        if (result.code===0) {
+          const user = result.data
+          this.$store.dispatch('saveUser',user)
+          this.$router.replace('/profile')
+        } else {
+          MessageBox('提示',result.msg)
+        }
+      },
+
+      updateCaptcha(){
+        this.$refs.captcha.src = 'http://localhost:4000/captcha?time' + Date.now()
+      } 
     }
-    
 
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-
+  @import '../../common/stylus/mixins.styl'
     .loginContainer
       width 100%
       height 100%
@@ -126,6 +202,8 @@
                   color #ccc
                   font-size 14px
                   background transparent
+                  &.right_phone_number
+                    color #000
               .login_verification
                 position relative
                 margin-top 16px
@@ -164,7 +242,9 @@
                     border-radius 50%
                     background #fff
                     box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
-                    transition transform .3s
+                    transition transform .2s
+                    &.right
+                      transform translateX(27px)
               .login_hint
                 margin-top 12px
                 color #999

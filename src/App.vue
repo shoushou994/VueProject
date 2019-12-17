@@ -13,6 +13,7 @@
   export default {
     async mounted(){
       this.$store.dispatch('getAddress')
+      this.$store.dispatch('autoLogin')
       // const result = await reqAddress(40.10038, 116.36867)
       // console.log('result',result);
     },
@@ -26,6 +27,5 @@
 
 
 <style lang="stylus" rel="stylesheet/stylus">
-  // @import "./common/stylus/mixins.styl"
 
 </style>

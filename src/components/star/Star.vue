@@ -5,55 +5,46 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import { mapState } from 'vuex'
-
-    const STAR_ON = 'on'
-    const STAR_HALF = 'half'
-    const STAR_OFF = 'off'
 
     export default {
         props:{
-            score:Number,
-            size:Number
+            score:Number, //评分
+            size:Number  //星星大小
         },
 
         computed:{
-            ...mapState(['shops']),
             //评分星星数组
             starClasses(){
-                const starCS = []
+                const starArr = []
                 const {score} = this
                 const scoreInt = Math.floor(score)
 
-                //添加类名STAR_ON
+                //添加类名on
                 for (let i = 0; i < scoreInt; i++) {
-                starCS.push(STAR_ON)
+                    starArr.push('on')
                 }
-                //添加类名STAR_HALF
+                //添加类名half
                 if (score*10 - scoreInt*10 >= 5) {
-                starCS.push(STAR_HALF)
+                    starArr.push('half')
                 }
-                //添加类名STAR_OFF
-                while (starCS.length < 5) {
-                starCS.push(STAR_OFF)
+                //添加类名off
+                while (starArr.length < 5) {
+                    starArr.push('off')
                 }
-
-                return starCS
+                return starArr
             }
-        },
-        mounted(){
-            this.$store.dispatch('getShops')
         }
     }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+    @import '../../common/stylus/mixins.styl'
     .star //2x图 3x图
         float left
         font-size 0
         .star-item
-        display inline-block
-        background-repeat no-repeat
+            display inline-block
+            background-repeat no-repeat
         &.star-48
             .star-item
                 width 20px
@@ -91,11 +82,11 @@
                 &:last-child
                     margin-right 0
                 &.on
-                    bg-image('./images/stars/star24_on@2x.png')
+                    bg-image('./images/stars/star24_on')
                 &.half
-                    bg-image('./images/stars/star24_half@2x.png')
+                    bg-image('./images/stars/star24_half')
                 &.off
-                    bg-image('./images/stars/star24_off@2x.png')
+                    bg-image('./images/stars/star24_off')
                     
  
 </style>

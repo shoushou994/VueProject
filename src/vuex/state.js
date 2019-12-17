@@ -6,4 +6,6 @@ export default {
     address: {},  //地址
     categorys: [],  //食品分类列表
     shops: [],  //商家列表
+    user:{},  //保存用户
+    token: localStorage.getItem('token') || ''
 }
