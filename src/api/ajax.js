@@ -39,13 +39,13 @@ instance.interceptors.response.use(
     error =>{
         Indicator.close()
         //如果error中没有response
-        if (!error.response && router.currentRouter.path!=='login') {
+        if (!error.response && router.currentRoute.path!=='login') {
             router.replace('/login')
             Toast('请求异常'+ error.message)
         } else{  //如果error中有response
             //status为: 401: token过期
             if (error.response.status===401 ) {
-                if (router.currentRouter.path!=='login') {
+                if (router.currentRoute.path!=='login') {
                     store.dispatch('logout')
                     router.replace('/login')
                     Toast(error.response.data.message || '登录过期，请重新登录')

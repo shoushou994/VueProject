@@ -9,6 +9,7 @@ import store from './vuex/store'
 import './utils/validate'  //引入表单验证
 import i18n from './i18n'  //国际化
 import * as API from '@/api'
+import './mock/mock-server'
 
 Vue.prototype.$API = API //将API对象挂载到Vue原型对象上
 Vue.config.productionTip = false //关闭提示

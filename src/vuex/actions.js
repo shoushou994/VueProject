@@ -1,7 +1,16 @@
 // 包含n个用于间接更新状态数据的方法的对象
 // 方法可以包含异步和逻辑处理代码
 
-import { reqAddress, reqCategorys, reqShops, reqAutoLogin } from "../api"
+import { 
+    reqAddress, 
+    reqCategorys, 
+    reqShops, 
+    reqAutoLogin, 
+    reqShopGoods, 
+    reqShopRatings, 
+    reqShopInfo 
+} from "../api"
+
 import {
     RECEIVE_ADDRESS, 
     RECEIVE_CATEGORYS, 
@@ -9,7 +18,10 @@ import {
     RECEIVE_USER, 
     RECEIVE_TOKEN,
     RESET_USER,
-    RESET_TOKEN
+    RESET_TOKEN,
+    RECEIVE_GOODS,
+    RECEIVE_RATINGS,
+    RECEIVE_INFO
 } from './mutation-types'
 
 export default {
@@ -67,5 +79,34 @@ export default {
         localStorage.removeItem('token')
         commit(RESET_USER)
         commit(RESET_TOKEN)
+    },
+
+    //获取商家食品列表
+    async getShopGoods({commit}, cb){
+        const result = await reqShopGoods()
+        if (result.code===0) {
+            const goods = result.data
+            commit(RECEIVE_GOODS, {goods})
+            typeof cb === 'function' && cb()
+        }
+    },
+    // 异步获取商家评论列表
+    async getShopRatings({commit}, cb) {
+        const result = await reqShopRatings()
+        if(result.code===0) {
+            const ratings = result.data
+            commit(RECEIVE_RATINGS, {ratings})
+            // 如果组件中传递了接收消息的回调函数, 数据更新后, 调用回调通知调用的组件
+            typeof cb === 'function' && cb()
+        }
+    },
+    //获取商家信息
+    async getShopInfo({commit}, cb){
+        const result = await reqShopInfo()
+        if (result.code===0) {
+            const info = result.data
+            commit(RECEIVE_INFO, {info})
+            typeof cb === 'function' && cb()
+        }
     }
 }

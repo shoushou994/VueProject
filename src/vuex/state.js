@@ -7,5 +7,8 @@ export default {
     categorys: [],  //食品分类列表
     shops: [],  //商家列表
     user:{},  //保存用户
-    token: localStorage.getItem('token') || ''
+    token: localStorage.getItem('token') || '',
+    goods: [],  //商品列表
+    ratings:[],  //评论列表
+    info:{}  //商家信息
 }

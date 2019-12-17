@@ -1,3 +1,8 @@
 {
-  "message": "hello i18n !!"
+  "login_login": "LOGIN",
+  "login_aboutUs": "ABOUT US",
+  "footer_home": "HOME",
+  "footer_search": "SEARCH",
+  "footer_order": "ORDER",
+  "footer_own": "OWN"
 }
