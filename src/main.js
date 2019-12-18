@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import Header from './components/header/Header.vue'
 import Star from './components/star/Star.vue'
+import CartControl from './components/cartControl/CartControl.vue'
 import store from './vuex/store'
 import './utils/validate'  //引入表单验证
 import i18n from './i18n'  //国际化
@@ -16,6 +17,7 @@ Vue.config.productionTip = false //关闭提示
 
 Vue.component('Header',Header)
 Vue.component('Star',Star)
+Vue.component('CartControl',CartControl)
 
 Vue.component(Tabbar.name, Tabbar);
 Vue.component(TabItem.name, TabItem);

@@ -2,9 +2,10 @@
   <div>
     <div class="goods">
       <div class="menu-wrapper" ref="left">
-        <ul>
+        <ul ref="leftUl">
           <!-- current -->
-          <li class="menu-item" :class="{current:index===currentIndex}" v-for="(good,index) in goods" :key="index">
+          <li class="menu-item" :class="{current:index===currentIndex}" 
+          v-for="(good,index) in goods" :key="index" @click="clickItem(index)">
             <span class="text bottom-border-1px">
               <img class="icon" :src="good.icon" v-if="good.icon">
               {{good.name}}
@@ -32,7 +33,7 @@
                     <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    <CartContral></CartContral>
+                    <CartControl></CartControl>
                   </div>
                 </div>
               </li>
@@ -47,7 +48,6 @@
 <script type="text/ecmascript-6">
   import {mapState} from 'vuex'
   import BScroll from 'better-scroll' 
-  import CartContral from '../../components/cartContral/CartContral'
 
   export default {
     data(){
@@ -58,25 +58,42 @@
         tops: []
       }
     },
+    mounted(){
+      this.$nextTick(()=>{  //列表数据显示了
+        this.initScroll()     
+        this.initTop()
+      })
+    },
     computed:{
       ...mapState(['goods']),
       currentIndex(){
         const {scrollY,tops} = this
-        return tops.findIndex((top,index) =>  scrollY >= top && scrollY <= tops[index+1])
+        const index = tops.findIndex((top,index) =>  scrollY >= top && scrollY <= tops[index+1])
+        console.log(tops);
+        console.log(index);
+        if (this.index !== index && this.leftScroll) {
+          this.index =index 
+          const li = this.$refs.leftUl.children[index]
+          this.leftScroll.scrollToElement(li,300)
+        }
+       return index
       }
     },
     methods:{
       //初始化滑动
       initScroll(){
-        new BScroll(this.$refs.left, {})
-        const rightScroll = new BScroll(this.$refs.right, {
+        this.leftScroll = new BScroll(this.$refs.left, {
+          click:true
+        })
+        this.rightScroll = new BScroll(this.$refs.right, {
+          click:true,
           probeType:1  //非实时触摸
         })
         //绑定滑动监听
-        rightScroll.on('scroll',({x,y})=>{
+        this.rightScroll.on('scroll',({x,y})=>{
           this.scrollY = Math.abs(y)
         })
-        rightScroll.on('scrollEnd',({x,y})=>{
+        this.rightScroll.on('scrollEnd',({x,y})=>{
           this.scrollY = Math.abs(y)
         })
 
@@ -93,6 +110,13 @@
         })
         this.tops = tops
       },
+      //点击左侧列表项，右侧列表滑到对应位置
+      clickItem(index){
+        console.log(index);
+        const top = this.tops[index]
+        this.scrollY = top
+        this.rightScroll.scrollTo(0, -top, 300)
+      }
     },
     watch:{
       goods(){
@@ -103,9 +127,7 @@
        
       }
     },
-    components:{
-      CartContral,
-    }
+    
   }
   
 </script>
