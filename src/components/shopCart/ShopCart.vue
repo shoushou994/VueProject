@@ -46,7 +46,9 @@
 
 <script type="text/ecmascript-6">
     import {mapState, mapGetters} from 'vuex'
+    import {CLEAR_CART} from '@/vuex/mutation-types'
     import BScroll from 'better-scroll'
+    import {MessageBox} from 'mint-ui'
 
     export default {
         data(){
@@ -105,7 +107,11 @@
                 }
             },
             clearCart(){
-                
+                MessageBox.confirm('确认清空吗？').then(
+                    ()=>{
+                        this.$store.commit(CLEAR_CART)
+                    }
+                )
             }
         }
     }

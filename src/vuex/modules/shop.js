@@ -12,6 +12,7 @@ import {
     RECEIVE_INFO,
     ADD_FOOD_COUNT,
     REDUCE_FOOD_COUNT,
+    CLEAR_CART,
 } from '../mutation-types'
 
 export default {
@@ -47,7 +48,12 @@ export default {
                     state.cartFoods.splice(state.cartFoods.indexOf(food), 1) //从购物车中移除
                 }
             }
+        },
+        [CLEAR_CART](state){
+            state.cartFoods.forEach(food => food.count = 0);
+            state.cartFoods = []  //重置购物车数组
         }
+
     },
     actions:{
         //获取商家食品列表

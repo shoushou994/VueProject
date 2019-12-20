@@ -18,7 +18,7 @@ instance.interceptors.request.use((config) => {
         config.data = qs.stringify(data)
     }
     // 通过请求头携带token数据
-    const token = store.state.token
+    const token = store.state.user.token
     if (token) {  //有token，就携带，
         config.headers['Authorization'] = token
     } else {

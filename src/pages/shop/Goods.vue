@@ -82,7 +82,7 @@
         if (this.index !== index && this.leftScroll) {
           this.index =index 
           const li = this.$refs.leftUl.children[index]
-          this.leftScroll.scrollToElement(li,300)
+          this.leftScroll.scrollToElement(li,300)   //左侧列表滑到当前列表项
         }
        return index
       }

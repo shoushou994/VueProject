@@ -8,12 +8,17 @@
 
 <script>
   import FooterGuide from '@/components/footerGuide/FooterGuide.vue'
+
   // import {reqAddress} from './api'
 
   export default {
     async mounted(){
       this.$store.dispatch('getAddress')
-      this.$store.dispatch('autoLogin')
+      const {token,user} = this.$store.state.user
+      if (token && !user.id) {
+        this.$store.dispatch('autoLogin')
+      }
+      
       // const result = await reqAddress(40.10038, 116.36867)
       // console.log('result',result);
     },
