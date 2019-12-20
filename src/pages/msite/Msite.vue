@@ -98,7 +98,11 @@
 
   export default {
     computed:{
-      ...mapState(['address', 'categorys', 'shops']),
+      ...mapState({
+        address: state => state.msite.address,
+        categorys: state => state.msite.categorys,
+        shops: state => state.msite.shops,
+      }),
 
       //自定义实现 轮播图分类数组
       categorysArr(){

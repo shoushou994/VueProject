@@ -4,7 +4,7 @@
       <div class="menu-wrapper" ref="left">
         <ul ref="leftUl">
           <!-- current -->
-          <li class="menu-item" :class="{current:index===currentIndex}" 
+          <li class="menu-item" :class="{current: index===currentIndex}" 
           v-for="(good,index) in goods" :key="index" @click="clickItem(index)">
             <span class="text bottom-border-1px">
               <img class="icon" :src="good.icon" v-if="good.icon">
@@ -18,7 +18,7 @@
           <li class="food-list-hook" v-for="(good,index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index">
+              <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index" @click="showFood(food)">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon">
                 </div>
@@ -33,7 +33,7 @@
                     <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    <CartControl></CartControl>
+                    <CartControl :food="food"/> 
                   </div>
                 </div>
               </li>
@@ -41,13 +41,17 @@
           </li>
         </ul>
       </div>
+      <ShopCart/>
     </div>
+    <Food :food="food" ref="food"/>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import {mapState} from 'vuex'
   import BScroll from 'better-scroll' 
+  import Food from '../../components/food/Food'
+  import ShopCart from '../../components/shopCart/ShopCart'
 
   export default {
     data(){
@@ -55,22 +59,26 @@
         //右侧列表滑动的Y轴坐标: scrollY  在滑动过程中不断改变
         scrollY: 0,
         // 右侧每个分类<li>的top值的数组tops: 第一次列表显示后统计后面不再变化
-        tops: []
+        tops: [],
+        food: {}  //需要显示的food
       }
     },
     mounted(){
-      this.$nextTick(()=>{  //列表数据显示了
-        this.initScroll()     
-        this.initTop()
-      })
+      if (!this.leftScroll && !this.rightScroll && !this.initTop) {
+        this.$nextTick(()=>{  //列表数据显示了
+          this.initScroll()     
+          this.initTop()
+        })
+      }
     },
     computed:{
-      ...mapState(['goods']),
+      ...mapState({
+        goods: state => state.shop.goods
+      }),
       currentIndex(){
         const {scrollY,tops} = this
-        const index = tops.findIndex((top,index) =>  scrollY >= top && scrollY <= tops[index+1])
-        console.log(tops);
-        console.log(index);
+        const index = tops.findIndex((top,index) =>  scrollY >= top && scrollY < tops[index+1])
+        //右侧滑动，左侧切换
         if (this.index !== index && this.leftScroll) {
           this.index =index 
           const li = this.$refs.leftUl.children[index]
@@ -100,34 +108,43 @@
       },
       //初始化右侧分类li的top，不再改变
       initTop(){
-        const {tops} = this
+        const tops = []
         let top = 0
         tops.push(top)
         const lis = Array.prototype.slice.call(this.$refs.rightUl.children)
         lis.forEach(li=>{
           top += li.clientHeight
-          tops.push(top)
+          if (tops.length <= 9) {
+            tops.push(top)
+          }
         })
         this.tops = tops
       },
       //点击左侧列表项，右侧列表滑到对应位置
       clickItem(index){
-        console.log(index);
         const top = this.tops[index]
         this.scrollY = top
         this.rightScroll.scrollTo(0, -top, 300)
+      },
+      //Food组件中 显示Food
+      showFood(food){
+        this.food = food
+        this.$refs.food.toggleShowFood()
       }
     },
     watch:{
       goods(){
         this.$nextTick(()=>{  //列表数据显示了
-          this.initScroll()     
           this.initTop()
+          this.initScroll()     
+          
         })
-       
       }
     },
-    
+    components:{
+      Food,
+      ShopCart
+    }
   }
   
 </script>
