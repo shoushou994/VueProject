@@ -3,13 +3,13 @@
     <ShopHeader></ShopHeader>
     <div class="tab">
       <div class="tab-item">
-        <router-link to="/shop/goods" replace>点餐</router-link>
+        <router-link :to="`/shop/${id}/goods`" replace>点餐</router-link>
       </div>
       <div class="tab-item">
-        <router-link to="/shop/ratings" replace>评价</router-link>
+        <router-link :to="`/shop/${id}/ratings`" replace>评价</router-link>
       </div>
       <div class="tab-item">
-        <router-link to="/shop/info" replace>商家</router-link>
+        <router-link :to="`/shop/${id}/info`" replace>商家</router-link>
       </div>
     </div>
     <router-view></router-view>
@@ -17,14 +17,36 @@
 </template>
 
 <script type="text/ecmascript-6">
-import ShopHeader from '../../components/shopHeader/ShopHeader'
+  import ShopHeader from '../../components/shopHeader/ShopHeader'
+  import {mapState} from 'vuex'
+  import {saveCartFoods} from '@/utils/sessionStorage'
+
   export default {
-    mounted(){
-      this.$store.dispatch('getShopGoods')
-      this.$store.dispatch('getShopRatings')
-      this.$store.dispatch('getShopInfo')
+    props:['id'],
+    computed:{
+      ...mapState({
+        shop: state => state.shop
+      })
     },
-    
+    mounted(){
+      /* this.$store.dispatch('getShopGoods')
+      this.$store.dispatch('getShopRatings')
+      this.$store.dispatch('getShopInfo') */
+      const id = this.id
+      this.$store.dispatch('getShop',id)
+
+      //窗口卸载监听， 刷新时保存
+      window.addEventListener('unload', ()=>{
+        const {shop:{id}, cartFoods} = this.shop  //多层解构
+        saveCartFoods(id, cartFoods)
+      })
+    },
+    //退出当前商家页面时保存
+    beforeDestroy(){
+      const {shop:{id}, cartFoods} = this.shop  //多层解构
+      saveCartFoods(id, cartFoods)
+    },
+   
     components:{
       ShopHeader,
     }

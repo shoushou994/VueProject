@@ -43,24 +43,26 @@ export default [
         component: Login
     },
     {
-        path: '/shop',
+        name:'shop',
+        path: '/shop/:id',
+        props: true,
         component: Shop,
         children:[
             {
-                path: '/shop/goods',
+                path: 'goods',
                 component: Goods
             },
             {
-                path: '/shop/ratings',
+                path: 'ratings',
                 component: Ratings
             },
             {
-                path: '/shop/info',
+                path: 'info',
                 component: Info
             },
             {
                 path:'',
-                redirect:'/shop/goods'
+                redirect:'goods'
             }
         ]
     },

@@ -34,6 +34,8 @@ export const reqPwdLogin = ({name,password,captcha}) => ajax.post('/login_pwd',{
 export const reqAutoLogin = () => ajax.get('/auto_login')
 
 //请求商家食品列表，评论列表，商家信息
-export const reqShopGoods = () => ajax('/goods')
-export const reqShopRatings = () => ajax('/ratings')
-export const reqShopInfo = () => ajax('/info')
+// export const reqShopGoods = () => ajax('/goods')
+// export const reqShopRatings = () => ajax('/ratings')
+// export const reqShopInfo = () => ajax('/info')
+////获取指定商家shop
+export const reqShop = (id) => ajax('/shop/' + id)

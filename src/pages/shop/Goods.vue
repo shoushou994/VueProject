@@ -63,17 +63,9 @@
         food: {}  //需要显示的food
       }
     },
-    mounted(){
-      if (!this.leftScroll && !this.rightScroll && !this.initTop) {
-        this.$nextTick(()=>{  //列表数据显示了
-          this.initScroll()     
-          this.initTop()
-        })
-      }
-    },
     computed:{
       ...mapState({
-        goods: state => state.shop.goods
+        goods: state => state.shop.shop.goods || []
       }),
       currentIndex(){
         const {scrollY,tops} = this
@@ -139,6 +131,13 @@
           this.initScroll()     
           
         })
+      }
+    },
+    mounted(){
+      // if (!this.leftScroll && !this.rightScroll && !this.initTop) {
+      if (this.goods.length > 0) {
+        this.initScroll()     
+        this.initTop()
       }
     },
     components:{
